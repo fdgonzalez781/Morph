@@ -1,15 +1,18 @@
 package com.morph.engine.graphics
 
-import com.morph.engine.core.Game
 import com.morph.engine.core.GameSystem
+import com.morph.engine.core.World
+import com.morph.engine.entities.Component
 import com.morph.engine.entities.Entity
 import com.morph.engine.graphics.components.Particle
 import com.morph.engine.physics.components.Transform2D
 
-class ParticleSystem(game : Game) : GameSystem(game) {
+class ParticleSystem(world: World) : GameSystem(world) {
     val start = Color(0f, 1f, 0f, 1f)
     val end = Color(0f, 0f, 1f, 0f)
     override fun acceptEntity(e: Entity): Boolean = e.hasComponent<Particle>() && e.hasComponent<Transform2D>()
+    override val requiredComponents: List<Class<out Component>>
+        get() = listOf(Particle::class.java, Transform2D::class.java)
 
     override fun initSystem() {}
 

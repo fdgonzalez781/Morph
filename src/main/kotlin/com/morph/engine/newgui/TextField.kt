@@ -58,6 +58,8 @@ open class TextField @JvmOverloads constructor(
             is KeyRepeat ->
                 if (e.key == GLFW_KEY_BACKSPACE) removeCharacter()
                 else if (isLegalCharacter(e.key)) addCharacter(getCharFromKeyData(e.key, e.hasMod(GLFW_MOD_SHIFT)))
+
+            else -> {}
         }
     }
 

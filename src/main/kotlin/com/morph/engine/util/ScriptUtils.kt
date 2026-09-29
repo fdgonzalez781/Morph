@@ -14,7 +14,7 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.schedulers.Schedulers
-import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmDaemonLocalEvalScriptEngineFactory
+import kotlin.script.experimental.jsr223.KotlinJsr223DefaultScriptEngineFactory
 import java.io.IOException
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -56,7 +56,7 @@ object ScriptUtils {
 
     private fun load(): Boolean {
         Console.out.println("Morph Script Engine " + Game.VERSION_STRING + " initializing... Please wait...")
-        val kotlinEngine = KotlinJsr223JvmDaemonLocalEvalScriptEngineFactory()
+        val kotlinEngine = KotlinJsr223DefaultScriptEngineFactory()
         //        PyScriptEngineFactory pythonEngine = new PyScriptEngineFactory();
 
         val manager = ScriptEngineManager()

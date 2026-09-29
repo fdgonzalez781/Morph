@@ -1,8 +1,9 @@
 package com.morph.engine.graphics;
 
 import com.morph.engine.core.Camera;
-import com.morph.engine.core.Game;
 import com.morph.engine.core.GameSystem;
+import com.morph.engine.core.World;
+import com.morph.engine.entities.Component;
 import com.morph.engine.entities.Entity;
 import com.morph.engine.graphics.components.Emitter;
 import com.morph.engine.graphics.components.RenderData;
@@ -12,9 +13,11 @@ import com.morph.engine.math.MatrixUtils;
 import com.morph.engine.newgui.Element;
 import com.morph.engine.physics.components.Transform;
 import com.morph.engine.physics.components.Transform2D;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -36,12 +39,12 @@ public class GLRenderingEngine extends GameSystem {
 	private List<Emitter> emitters;
 	private Framebuffer activeFramebuffer;
 
-	public GLRenderingEngine(Game game) {
-		super(game);
+	public GLRenderingEngine(World world, int width, int height) {
+		super(world);
 		this.lights = new ArrayList<>();
 		this.emitters = new ArrayList<>();
 		this.batcher = new RenderBatcher();
-		this.screenProjection = MatrixUtils.getOrthographicProjectionMatrix(game.getHeight(), 0, 0, game.getWidth(), -1, 1);
+		this.screenProjection = MatrixUtils.getOrthographicProjectionMatrix(height, 0, 0, width, -1, 1);
 	}
 
 	private void render(RenderData data, Transform transform) {
@@ -76,7 +79,7 @@ public class GLRenderingEngine extends GameSystem {
 		emitter.getShader().getUniforms().setUniforms(emitter);
 
 		glBindVertexArray(emitter.getVao());
-		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL, emitter.getSize());
+		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL, emitter.size());
 		glBindVertexArray(0);
 
 		emitter.getShader().getUniforms().unbind();
@@ -93,7 +96,7 @@ public class GLRenderingEngine extends GameSystem {
 
 	public void register(Entity e) {
 		if (e.hasComponents(RenderData.class, Transform2D.class)) {
-			var renderable = new Renderable.REntity(e);
+			Renderable.REntity renderable = new Renderable.REntity(e);
 			batcher.add(renderable);
 		}
 
@@ -111,7 +114,7 @@ public class GLRenderingEngine extends GameSystem {
 	}
 
 	public void register(Element e) {
-		var renderable = new Renderable.RElement(e);
+		Renderable.RElement renderable = new Renderable.RElement(e);
 		batcher.add(renderable);
 	}
 
@@ -169,8 +172,8 @@ public class GLRenderingEngine extends GameSystem {
 	}
 
 	private void render(Renderable renderable) {
-		var data = renderable.getRenderData();
-		var transform = renderable.getTransform();
+		RenderData data = renderable.getRenderData();
+		Transform transform = renderable.getTransform();
 
 		data.getShader().getUniforms().setUniforms(transform, data, camera, screenProjection, lights); // TODO: Generate UBO instead of setting uniforms
 
@@ -208,5 +211,10 @@ public class GLRenderingEngine extends GameSystem {
 
 	public void setActiveFramebuffer(Framebuffer activeFramebuffer) {
 		this.activeFramebuffer = activeFramebuffer;
+	}
+
+	@Override
+	public @NotNull List<@NotNull Class<? extends @NotNull Component>> getRequiredComponents() {
+		return Arrays.asList(Transform.class, RenderData.class);
 	}
 }

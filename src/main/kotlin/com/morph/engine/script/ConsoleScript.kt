@@ -20,13 +20,13 @@ abstract class ConsoleScript : Runnable {
     }
 
     protected fun addEntity(name: String, vararg components: Component) {
-        val e = EntityGenUtils.createEntity(name, *components)
+        val e = EntityGenUtils.createEntity(console?.getGame()?.world!!, name, *components)
         console?.getGame()?.world?.addEntity(e)
         echo("Created new entity $name (ID #${e.id})")
     }
 
     protected fun addEntityRectangle(name: String, width: Float, height: Float, isTrigger: Boolean, vararg components: Component) {
-        val e = EntityGenUtils.createEntityRectangle(name, width, height, isTrigger, *components)
+        val e = EntityGenUtils.createEntityRectangle(console?.getGame()?.world!!, name, width, height, isTrigger, *components)
         console?.getGame()?.world?.addEntity(e)
         echo("Created new entity $name (ID #${e.id})")
     }

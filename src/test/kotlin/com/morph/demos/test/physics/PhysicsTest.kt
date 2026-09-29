@@ -2,10 +2,8 @@ package com.morph.demos.test.physics
 
 import com.morph.engine.collision.CollisionEngine
 import com.morph.engine.collision.PerfectlyInelasticSolver
-import com.morph.engine.core.Game
-import com.morph.engine.core.GameApplication
-import com.morph.engine.core.ListWorld
-import com.morph.engine.core.OrthoCam2D
+import com.morph.engine.collision.RestitutionSolver
+import com.morph.engine.core.*
 import com.morph.engine.entities.Entity
 import com.morph.engine.entities.EntityFactory
 import com.morph.engine.graphics.Color
@@ -28,17 +26,22 @@ class PhysicsGame : Game(800, 600, "Physics Demo", 60f, false) {
     override fun initGame() {
         val size = 100f
 
-        setWorld(PhysicsWorld(this))
         camera = OrthoCam2D(Vector2f(0f, 0f), 0f, size * (width.toFloat() / height), size)
 
-        addSystem(ForceSystem(this))
-        addSystem(CollisionEngine(this, PerfectlyInelasticSolver()))
-        addSystem(PhysicsEngine(this))
+        world.addSystem(::ForceSystem)
+        world.addSystem{ CollisionEngine(it, RestitutionSolver(0.9f)) }
+        world.addSystem(::PhysicsEngine)
 
         val inputMapping = InputMapping()
 
         inputMapping.mapButton(GLFW_MOUSE_BUTTON_1, MousePress) {
-            val entity = EntityFactory.getCustomTintRectangle("block-${System.nanoTime()}", 3f, 3f, Color(0.8f, 0.8f, 0.8f), TintShader())
+            val entity = EntityFactory.getCustomTintRectangle(
+                "block-${System.nanoTime()}",
+                3f,
+                3f,
+                Color(0.8f, 0.8f, 0.8f),
+                TintShader()
+            )
             entity.addComponent(RigidBody())
             entity.getComponent<Transform2D>()!!.position = Mouse.worldMousePosition
 
@@ -65,6 +68,14 @@ class PhysicsGame : Game(800, 600, "Physics Demo", 60f, false) {
         }
 
         this.inputMapping = inputMapping
+
+        val floor = EntityFactory.getCustomTintRectangle("floor", 200f, 2f, Color(0f, 0f, 0.7f), TintShader())
+        floor.getComponent<Transform2D>()?.position = Vector2f(0f, -49f)
+
+        val player = EntityFactory.getCustomTintRectangle("player", 2f, 2f, Color(0.5f, 0.9f, 0.5f), TintShader()).addComponent(RigidBody())
+
+        val physicsScene = Scene("physicsScene", mutableListOf(floor, player))
+        loadScene(physicsScene)
     }
 
     override fun preGameUpdate() {
@@ -78,17 +89,5 @@ class PhysicsGame : Game(800, 600, "Physics Demo", 60f, false) {
     }
 
     override fun handleInput() {
-    }
-}
-
-class PhysicsWorld(game : PhysicsGame) : ListWorld(game) {
-    override fun init() {
-        val floor = EntityFactory.getCustomTintRectangle("floor", 200f, 2f, Color(0f, 0f, 0.7f), TintShader())
-
-        floor.getComponent<Transform2D>()?.position = Vector2f(0f, -49f)
-
-        addEntity(floor)
-
-        addEntity(EntityFactory.getCustomTintRectangle("player", 2f, 2f, Color(0.5f, 0.9f, 0.5f), TintShader()).addComponent(RigidBody()))
     }
 }

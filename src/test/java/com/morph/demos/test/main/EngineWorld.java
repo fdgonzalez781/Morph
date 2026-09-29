@@ -1,7 +1,7 @@
 package com.morph.demos.test.main;
 
 import com.morph.engine.core.Game;
-import com.morph.engine.core.ListWorld;
+import com.morph.engine.core.World;
 import com.morph.engine.entities.Entity;
 import com.morph.engine.entities.EntityFactory;
 import com.morph.engine.graphics.Color;
@@ -10,7 +10,7 @@ import com.morph.engine.graphics.components.RenderData;
 import com.morph.engine.graphics.shaders.BasicLightShader;
 import com.morph.engine.script.ScriptContainer;
 
-public class EngineWorld extends ListWorld {
+public class EngineWorld extends World {
     public EngineWorld(Game game) {
         super(game);
     }

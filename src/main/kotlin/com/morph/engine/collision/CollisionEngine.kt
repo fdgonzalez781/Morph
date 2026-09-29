@@ -3,8 +3,9 @@ package com.morph.engine.collision
 import com.morph.engine.collision.components.BoundingBox2D
 import com.morph.engine.collision.components.CollisionComponent
 import com.morph.engine.collision.components.TriggerComponent
-import com.morph.engine.core.Game
 import com.morph.engine.core.GameSystem
+import com.morph.engine.core.World
+import com.morph.engine.entities.Component
 import com.morph.engine.entities.Entity
 import com.morph.engine.entities.given
 import com.morph.engine.math.MathUtils
@@ -16,15 +17,15 @@ import java.util.*
 
 // Reference: noonat.github.io/intersect/
 
-class CollisionEngine(game: Game, val collisionSolver: CollisionSolver) : GameSystem(game) {
+class CollisionEngine(world: World, val collisionSolver: CollisionSolver) : GameSystem(world) {
     override fun fixedUpdate(e: Entity, dt: Float) {
         updateCollider(e.getComponent()!!, e.getComponent()!!)
     }
 
-    override fun systemFixedUpdate(dt: Float) {
+    override fun systemFixedUpdate(world: World, dt: Float) {
         val collidables = ArrayList<Entity>()
-        for (i in game.world.entities.size - 1 downTo 0) {
-            val e = game.world.entities[i]
+        for (i in world.entities.size - 1 downTo 0) {
+            val e = world.entities[i]
             if (acceptEntity(e)) {
                 collidables.add(e)
             }
@@ -39,8 +40,8 @@ class CollisionEngine(game: Game, val collisionSolver: CollisionSolver) : GameSy
                 val a = entities[i]
                 val b = entities[j]
 
-                given<BoundingBox2D>(a) { boxA ->
-                    given<BoundingBox2D>(b) { boxB ->
+                given(a) { boxA : BoundingBox2D ->
+                    given(b) { boxB : BoundingBox2D ->
                         val coll = checkCollision(a, b, dt)
 
                         if (coll is SweepCollision.Hit) { // Collision Solver
@@ -235,6 +236,8 @@ class CollisionEngine(game: Game, val collisionSolver: CollisionSolver) : GameSy
     }
 
     override fun acceptEntity(e: Entity): Boolean = e.hasComponent<BoundingBox2D>()
+    override val requiredComponents: List<Class<out Component>>
+        get() = listOf(BoundingBox2D::class.java)
 
     override fun initSystem() {
         // TODO Auto-generated method stub

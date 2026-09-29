@@ -1,13 +1,18 @@
 package com.morph.demos.test.physics
 
 import com.morph.engine.core.GameSystem
+import com.morph.engine.core.World
+import com.morph.engine.entities.Component
 import com.morph.engine.entities.Entity
 import com.morph.engine.math.Vector2f
 import com.morph.engine.physics.components.RigidBody
 import com.morph.engine.physics.components.Transform2D
 
-class ForceSystem(game : PhysicsGame) : GameSystem(game) {
+class ForceSystem(world: World) : GameSystem(world) {
     override fun acceptEntity(e: Entity): Boolean = e.hasComponent<Transform2D>() && e.hasComponent<RigidBody>()
+    override val requiredComponents: List<Class<out Component>>
+        get() = listOf(Transform2D::class.java, RigidBody::class.java)
+
     override fun initSystem() {}
 
     override fun fixedUpdate(e: Entity, dt: Float) {

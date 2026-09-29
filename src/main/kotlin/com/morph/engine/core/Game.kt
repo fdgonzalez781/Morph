@@ -1,6 +1,7 @@
 package com.morph.engine.core
 
 import com.morph.engine.core.gui.ConsoleGUI
+import com.morph.engine.entities.EntityFactory
 import com.morph.engine.graphics.GLDisplay
 import com.morph.engine.graphics.GLRenderingEngine
 import com.morph.engine.input.InputMapping
@@ -29,19 +30,18 @@ abstract class Game(
     @Volatile
     private var isRunning = false
     val timestep: Float = 1.0f / fps
-
-    var world: IWorld? = null
-        set(nextWorld) {
-            if (world != null) {
-                world!!.entities.forEach { renderingEngine.unregister(it) }
-                world!!.destroy()
-            }
-
-            nextWorld!!.init()
-            nextWorld.entities.forEach { renderingEngine.register(it) }
-            field = nextWorld
-        }
-    protected var systems: MutableList<GameSystem> = ArrayList()
+    final var world: World = World(this)
+//    var world: World? = null
+//        set(nextWorld) {
+//            if (world != null) {
+//                world!!.entities.forEach { renderingEngine.unregister(it) }
+//                world!!.destroy()
+//            }
+//
+//            nextWorld!!.init()
+//            nextWorld.entities.forEach { renderingEngine.register(it) }
+//            field = nextWorld
+//        }
 
     // TODO: Game is a god class, consider moving below fields to different classes (behaviors to camera)
 
@@ -76,6 +76,7 @@ abstract class Game(
         this.console = Console(Console.ScriptType.KOTLIN, this)
         this.consoleGUI = ConsoleGUI(this, console, width, height)
         this.inputMapping = InputMapping()
+        EntityFactory.world = this.world
     }
 
     fun start() {
@@ -122,9 +123,7 @@ abstract class Game(
 
         preGameUpdate()
 
-        for (gs in systems) {
-            gs.preUpdate(this)
-        }
+        world.preUpdate()
 
         guis.forEach { it.preUpdate() }
         behaviors.values.forEach { it.preUpdate() }
@@ -133,9 +132,7 @@ abstract class Game(
     private fun postUpdate() {
         postGameUpdate()
 
-        for (gs in systems) {
-            gs.postUpdate(this)
-        }
+        world.postUpdate()
 
         guis.forEach { it.postUpdate() }
         behaviors.values.forEach { it.postUpdate() }
@@ -152,11 +149,13 @@ abstract class Game(
         ScriptUtils.init(this)
 
         display = GLDisplay(width, height, title)
-        renderingEngine = GLRenderingEngine(this)
-        val scriptSystem = ScriptSystem(this)
+//        renderingEngine = GLRenderingEngine(this)
+        println(world)
+        renderingEngine = world.addSystem { GLRenderingEngine(it, width, height) } as GLRenderingEngine
+        val scriptSystem = world.addSystem { ScriptSystem(it) }
 
-        addSystem(renderingEngine)
-        addSystem(scriptSystem)
+//        addSystem(renderingEngine)
+//        addSystem(scriptSystem)
 
         display.init(this)
         display.show()
@@ -166,7 +165,7 @@ abstract class Game(
 
         initGame()
 
-        systems.forEach(GameSystem::initSystem)
+        world.initSystems()
 
         consoleGUI.init()
 
@@ -222,22 +221,12 @@ abstract class Game(
     private fun update() {
         inputMapping!!.update()
 
-        for (gs in systems) {
-            gs.update(this)
-        }
+        world.update()
 
         guis.forEach(GUI::update)
         behaviors.values.forEach(GameBehavior::update)
 
         Keyboard.standardKeyEvents.forEach { e -> if (e.action === KeyPress && e.key == GLFW.GLFW_KEY_GRAVE_ACCENT) toggleConsole() }
-    }
-
-    fun addSystem(gs: GameSystem) {
-        systems.add(gs)
-    }
-
-    fun removeSystem(gs: GameSystem) {
-        systems.remove(gs)
     }
 
     protected fun pollEvents() {
@@ -296,9 +285,7 @@ abstract class Game(
     fun fixedUpdate(dt: Float) {
         fixedGameUpdate(dt)
 
-        for (gs in systems) {
-            gs.fixedUpdate(this, dt)
-        }
+        world.fixedUpdate(dt)
 
         guis.forEach { gui -> gui.fixedUpdate(dt) }
 
@@ -319,6 +306,14 @@ abstract class Game(
         newBehavior.setGame(this)
         behaviors.replace(filename, newBehavior)
         newBehavior.start()
+    }
+
+    fun loadScene(scene: Scene) {
+        world.addScene(scene)
+    }
+
+    fun unloadScene(scene: Scene) {
+        world.removeScene(scene)
     }
 
     abstract fun initGame()

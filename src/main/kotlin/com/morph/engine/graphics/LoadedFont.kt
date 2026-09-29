@@ -81,7 +81,7 @@ class LoadedFont(val fontName: String) {
                     val leftSideBearing = IntArray(1)
 
                     STBTruetype.stbtt_GetPackedQuad(packedChars, LoadedFont.BITMAP_WIDTH, LoadedFont.BITMAP_HEIGHT, i, x, y, q, false)
-                    STBTruetype.stbtt_GetCodepointHMetrics(fontInfo, c.toInt(), xAdvance, leftSideBearing)
+                    STBTruetype.stbtt_GetCodepointHMetrics(fontInfo, c.code, xAdvance, leftSideBearing)
 
                     val texCoords = arrayOf(Vector2f(q.s0(), q.t0()), Vector2f(q.s1(), q.t0()), Vector2f(q.s1(), q.t1()), Vector2f(q.s0(), q.t1()))
 
@@ -90,9 +90,10 @@ class LoadedFont(val fontName: String) {
                     val pc = packedChars.get(i)
                     val offsetData = floatArrayOf(pc.xoff(), pc.yoff(), pc.xoff2(), pc.yoff2())
 
-                    characters[c.toInt() - CHAR_FIRST] = LoadedCharacter(c, texCoords, indices.toList().toTypedArray().toIntArray(), xAdvance[0].toFloat(), offsetData)
+                    characters[c.code - CHAR_FIRST] = LoadedCharacter(c, texCoords, indices.toList().toTypedArray().toIntArray(), xAdvance[0].toFloat(), offsetData)
 
-                    CharBuffer.wrap(CHARSET.toCharArray()).chars().forEach { c2 -> kerningTable[c.toInt() - CHAR_FIRST][c2 - CHAR_FIRST] = STBTruetype.stbtt_GetCodepointKernAdvance(fontInfo, c.toInt(), c2) * scale }
+                    CharBuffer.wrap(CHARSET.toCharArray()).chars().forEach { c2 -> kerningTable[c.code - CHAR_FIRST][c2 - CHAR_FIRST] = STBTruetype.stbtt_GetCodepointKernAdvance(fontInfo,
+                        c.code, c2) * scale }
                 }
             }
         } catch (e: IOException) {
@@ -102,13 +103,13 @@ class LoadedFont(val fontName: String) {
     }
 
     fun kerningLookup(c1: Char, c2: Char): Float {
-        return if (c1 == '\n' || c2 == '\n') 0f else kerningTable[c1.toInt() - CHAR_FIRST][c2.toInt() - CHAR_FIRST]
+        return if (c1 == '\n' || c2 == '\n') 0f else kerningTable[c1.code - CHAR_FIRST][c2.code - CHAR_FIRST]
 
     }
 
-    fun getCharData(c: Char) = charIndices[c.toInt() - CHAR_FIRST]
+    fun getCharData(c: Char) = charIndices[c.code - CHAR_FIRST]
 
-    fun getCharacter(c: Char) = characters[c.toInt() - CHAR_FIRST]
+    fun getCharacter(c: Char) = characters[c.code - CHAR_FIRST]
 
     fun getYAdvance() = yAdvance.toFloat()
 

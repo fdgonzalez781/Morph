@@ -1,7 +1,6 @@
 package com.morph.engine.graphics.components
 
-import com.morph.engine.collision.components.BoundingBox2D
-import com.morph.engine.core.IWorld
+import com.morph.engine.core.World
 import com.morph.engine.entities.Component
 import com.morph.engine.entities.EntityFactory
 import com.morph.engine.graphics.Color
@@ -125,13 +124,13 @@ class Emitter(
         glBindVertexArray(0)
     }
 
-    fun spawnParticle(world : IWorld) {
+    fun spawnParticle(world : World) {
         val particle = Particle(color, this)
-        val randomOffset = Vector2f((Math.random() - 0.5).toFloat() * Emitter.spread, (Math.random() - 0.5).toFloat() * Emitter.spread)
+        val randomOffset = Vector2f((Math.random() - 0.5).toFloat() * spread, (Math.random() - 0.5).toFloat() * spread)
         val particlePos = parent?.getComponent<Transform2D>()?.position!! + randomOffset
         // TODO: Handle the case where a particle emitter has no parent entity (?)
 
-        val entity = EntityFactory.getEntity("Particle-${System.nanoTime()}")
+        val entity = world.createEntity("Particle-${System.nanoTime()}")
                 .addComponent(Transform2D(position = particlePos, scale = Vector2f(Emitter.size, Emitter.size)))
                 .addComponent(particle)
                 .addComponent(RigidBody(mass = 10f))
@@ -144,7 +143,7 @@ class Emitter(
     }
 
     companion object {
-        var size = 1f
+        var size = 0.1f
         var spread = 3f
     }
 }

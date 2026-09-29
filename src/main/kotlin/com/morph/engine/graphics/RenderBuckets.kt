@@ -25,14 +25,10 @@ sealed class Renderable {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other is Renderable) {
-            return when (other) {
-                is Renderable.RElement -> if (this is Renderable.RElement) other == this else false
-                is Renderable.REntity -> if (this is Renderable.REntity) other == this else false
-            }
+        return other is Renderable && when (other) {
+            is RElement -> this is RElement && other == this
+            is REntity -> this is REntity && other == this
         }
-
-        return false
     }
 
     abstract val renderData : RenderData

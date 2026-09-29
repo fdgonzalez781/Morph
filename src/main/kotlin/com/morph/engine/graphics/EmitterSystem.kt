@@ -1,13 +1,16 @@
 package com.morph.engine.graphics
 
-import com.morph.engine.core.Game
 import com.morph.engine.core.GameSystem
+import com.morph.engine.core.World
+import com.morph.engine.entities.Component
 import com.morph.engine.entities.Entity
 import com.morph.engine.graphics.components.Emitter
 import com.morph.engine.physics.components.Transform2D
 
-class EmitterSystem(game : Game) : GameSystem(game) {
+class EmitterSystem(world : World) : GameSystem(world) {
     override fun acceptEntity(e: Entity): Boolean = e.hasComponent<Emitter>() && e.hasComponent<Transform2D>()
+    override val requiredComponents: List<Class<out Component>>
+        get() = listOf(Transform2D::class.java, Emitter::class.java)
 
     override fun initSystem() {}
 
@@ -21,13 +24,13 @@ class EmitterSystem(game : Game) : GameSystem(game) {
             emitter.acc += dt
 
             while (emitter.acc >= (1f / emitter.spawnRate)) {
-                emitter.spawnParticle(game.world)
+                emitter.spawnParticle(world)
                 emitter.acc -= (1f / emitter.spawnRate)
             }
         }
 
         while (emitter.peek() != null && emitter.peek().age >= emitter.lifetime) {
-            emitter.peek().parent?.apply { game.world.removeEntity(this) }
+            emitter.peek().parent?.apply { world.removeEntity(this) }
             emitter.remove()
         }
     }

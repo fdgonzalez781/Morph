@@ -1,14 +1,17 @@
 package com.morph.engine.physics
 
-import com.morph.engine.core.Game
 import com.morph.engine.core.GameSystem
+import com.morph.engine.core.World
+import com.morph.engine.entities.Component
 import com.morph.engine.entities.Entity
 import com.morph.engine.entities.given
 import com.morph.engine.physics.components.RigidBody
 import com.morph.engine.physics.components.Transform
 
-class PhysicsEngine(game : Game) : GameSystem(game) {
+class PhysicsEngine(world: World) : GameSystem(world) {
     override fun acceptEntity(e: Entity): Boolean = e.hasComponent<RigidBody>() && e.hasComponent<Transform>()
+    override val requiredComponents: List<Class<out Component>>
+        get() = listOf(RigidBody::class.java, Transform::class.java)
 
     override fun initSystem() {}
 

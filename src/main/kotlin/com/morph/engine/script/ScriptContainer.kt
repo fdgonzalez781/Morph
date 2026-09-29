@@ -13,14 +13,14 @@ class ScriptContainer(private val game: Game) : Component() {
     private val behaviors: HashMap<String, EntityBehavior> = HashMap()
 
     fun addBehavior(filename: String) {
-        ScriptUtils.getScriptBehaviorAsync(filename).subscribe({ behavior ->
+        ScriptUtils.getScriptBehaviorAsync(filename).subscribe { behavior ->
             val eBehavior = behavior as EntityBehavior
             eBehavior.setGame(game)
             eBehavior.self = parent
             behaviors[filename] = eBehavior
             eBehavior.init()
             eBehavior.start()
-        })
+        }
     }
 
     fun replaceBehavior(filename: String, newBehavior: EntityBehavior) {

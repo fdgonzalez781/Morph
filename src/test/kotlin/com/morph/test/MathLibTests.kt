@@ -14,6 +14,10 @@ class MathLibTests {
                 val matrix = Matrix4f(values)
                 val inverse = matrix.inverse
                 val result = matrix * inverse
+                println("MATRIX: $matrix")
+                println("INVERSE: $inverse")
+                println("RESULT: $result")
+                println("DETERMINANT: ${matrix.determinant}")
                 if (matrix.determinant != 0f)
                     assertTrue(
                             Matrix4f.approxIdentity(result, 0.1f) || matrix.determinant < 1e-3f,

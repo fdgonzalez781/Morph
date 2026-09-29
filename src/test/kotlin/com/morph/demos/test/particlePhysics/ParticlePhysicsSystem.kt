@@ -1,6 +1,8 @@
 package com.morph.demos.test.particlePhysics
 
 import com.morph.engine.core.GameSystem
+import com.morph.engine.core.World
+import com.morph.engine.entities.Component
 import com.morph.engine.entities.Entity
 import com.morph.engine.graphics.components.Particle
 import com.morph.engine.math.Vector2f
@@ -8,9 +10,11 @@ import com.morph.engine.math.Vector3f
 import com.morph.engine.physics.components.RigidBody
 import com.morph.engine.physics.components.Transform2D
 
-class ParticlePhysicsSystem(game : PartPhysGame) : GameSystem(game) {
+class ParticlePhysicsSystem(world : World) : GameSystem(world) {
     var time = 0f
     override fun acceptEntity(e: Entity): Boolean = e.hasComponent<Transform2D>() && e.hasComponent<RigidBody>() && e.hasComponent<Particle>()
+    override val requiredComponents: List<Class<out Component>>
+        get() = listOf(Transform2D::class.java, RigidBody::class.java, Particle::class.java)
 
     override fun initSystem() {}
 
@@ -41,7 +45,7 @@ class ParticlePhysicsSystem(game : PartPhysGame) : GameSystem(game) {
 //        rb.applyForce(frictionForce)
 //        rb.applyForce(downGravity)
 
-        val locusP = game.world.getEntityByName("locus")?.getComponent<Transform2D>()?.position!!
+        val locusP = world.getEntityByName("locus")?.getComponent<Transform2D>()?.position!!
 //        val denom = (locusP - position).length
         val tolerance = 0.01f
         val power = 0.0
@@ -69,7 +73,7 @@ class ParticlePhysicsSystem(game : PartPhysGame) : GameSystem(game) {
         return forceStrength
     }
 
-    override fun systemFixedUpdate(dt: Float) {
+    override fun systemFixedUpdate(world: World, dt: Float) {
         time += dt
     }
 

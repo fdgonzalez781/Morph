@@ -1,17 +1,21 @@
 package com.morph.engine.script
 
-import com.morph.engine.core.Game
 import com.morph.engine.core.GameSystem
+import com.morph.engine.core.World
+import com.morph.engine.entities.Component
 import com.morph.engine.entities.Entity
 
 /**
  * Created on 7/5/2017.
  */
-class ScriptSystem(game: Game) : GameSystem(game) {
+class ScriptSystem(world: World) : GameSystem(world) {
 
     override fun acceptEntity(e: Entity): Boolean {
         return e.hasComponent(ScriptContainer::class.java)
     }
+
+    override val requiredComponents: List<Class<out Component>>
+        get() = listOf(ScriptContainer::class.java)
 
     override fun initSystem() {
 

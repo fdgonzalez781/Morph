@@ -57,3 +57,4 @@ data class Entity @JvmOverloads constructor(
 // TODO: Remove
 inline fun <reified T: Component> given(e: Entity, block: (T) -> Unit) = e.getComponent<T>()?.let(block)
 inline fun <reified T: Component> withComponent(e: Entity, block: T.() -> Unit) = e.getComponent<T>()?.apply(block)
+
