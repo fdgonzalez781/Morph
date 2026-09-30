@@ -99,6 +99,10 @@ data class Vector2f(var x: Float = 0f, var y: Float = 0f) {
 
     fun map(f: (Float) -> Float) = Vector2f(f(x), f(y))
 
+    fun toList(): List<Float> {
+        return listOf(x, y)
+    }
+
     companion object {
         fun reflect(n: Vector2f, v: Vector2f): Vector2f {
             return v + (n * (-2 * (v dot n)))

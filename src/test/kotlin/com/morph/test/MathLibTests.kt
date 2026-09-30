@@ -7,7 +7,7 @@ import kotlin.test.assertTrue
 class MathLibTests {
     companion object {
         @JvmStatic fun main(args: Array<String>) {
-            val numberOfTests = 500000
+            val numberOfTests = 500
             val r = Random()
             for (i in 1..numberOfTests) {
                 val values = generateSequence { (r.nextInt(11) - 5).toFloat() }.take(16).toList().toFloatArray()

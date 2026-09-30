@@ -22,7 +22,7 @@ class BasicTexturedShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         mvp = t.transformationMatrix
-        diffuse = data.getTexture(0)
+        diffuse = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture")
 
         setUniformMatrix4fv("mvp", camera.modelViewProjection * mvp)
         setUniform1i("diffuse", 0)
@@ -46,7 +46,7 @@ class GUIShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         mvp = t.transformationMatrix
-        diffuse = data.getTexture(0)
+        diffuse = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture")
 
         setUniformMatrix4fv("mvp", screen * mvp)
         setUniform1i("diffuse", 0)
@@ -71,7 +71,7 @@ class GUITextShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         mvp = t.transformationMatrix
-        diffuse = data.getTexture(0)
+        diffuse = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture")
 
         setUniformMatrix4fv("mvp", screen * mvp)
         setUniform1i("diffuse", 0)
@@ -97,7 +97,7 @@ class GUITintShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         mvp = t.transformationMatrix
-        diffuse = data.getTexture(0)
+        diffuse = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture")
 
         setUniformMatrix4fv("mvp", screen * mvp)
         setUniform1i("diffuse", 0)
@@ -128,8 +128,8 @@ class GUITintTransitionShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         this.mvp = t.transformationMatrix
-        this.diff1 = data.getTexture(0)
-        this.diff2 = data.getTexture(1)
+        this.diff1 = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture 1")
+        this.diff2 = data.getTexture(1) ?: throw IllegalStateException("No diffuse texture 2")
         this.diffuseColor = data.tint
         this.lerpFactor = data.lerpFactor
 
@@ -164,8 +164,8 @@ class GUITransitionShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         this.mvp = t.transformationMatrix
-        this.diff1 = data.getTexture(0)
-        this.diff2 = data.getTexture(1)
+        this.diff1 = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture 1")
+        this.diff2 = data.getTexture(1) ?: throw IllegalStateException("No diffuse texture 2")
         this.lerpFactor = data.lerpFactor
 
         setUniformMatrix4fv("mvp", screen * mvp)
@@ -195,7 +195,7 @@ class TextShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         mvp = t.transformationMatrix
-        diffuse = data.getTexture(0)
+        diffuse = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture")
 
         setUniformMatrix4fv("mvp", camera.modelViewProjection * mvp)
         setUniform1i("diffuse", 0)
@@ -221,7 +221,7 @@ class TintShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         mvp = t.transformationMatrix
-        diffuse = data.getTexture(0)
+        diffuse = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture")
 
         setUniformMatrix4fv("mvp", camera.modelViewProjection * mvp)
         setUniform1i("diffuse", 0)
@@ -250,8 +250,8 @@ class TransitionShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         this.mvp = t.transformationMatrix
-        this.diff1 = data.getTexture(0)
-        this.diff2 = data.getTexture(1)
+        this.diff1 = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture 1")
+        this.diff2 = data.getTexture(1) ?: throw IllegalStateException("No diffuse texture 2")
         this.lerpFactor = data.lerpFactor
 
         setUniformMatrix4fv("mvp", camera.modelViewProjection * mvp)
@@ -291,7 +291,7 @@ class BasicLightShaderUniforms : Uniforms() {
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
         mvp = t.transformationMatrix
-        diffuse = data.getTexture(0)
+        diffuse = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture")
         normal = data.getTexture(1)
 
         setUniformMatrix4fv("mvp", camera.modelViewProjection * mvp)
@@ -324,7 +324,7 @@ class InstancedShaderUniforms : Uniforms() {
     }
 
     override fun setUniforms(t: Transform, data: RenderData, camera: Camera, screen: Matrix4f, lights: List<Light>) {
-        diffuse = data.getTexture(0)
+        diffuse = data.getTexture(0) ?: throw IllegalStateException("No diffuse texture")
 
         setUniform1i("diffuse", 0)
 

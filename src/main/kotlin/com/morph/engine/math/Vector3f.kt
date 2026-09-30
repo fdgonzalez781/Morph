@@ -40,6 +40,14 @@ class Vector3f {
         return "Vector3f($x, $y, $z)"
     }
 
+    fun toArray(): FloatArray {
+        return floatArrayOf(x, y, z);
+    }
+
+    fun toList(): List<Float> {
+        return listOf(x, y, z);
+    }
+
     fun asTranslationMatrix(): Matrix4f {
         return Matrix4f(
                 1f, 0f, 0f, x,

@@ -226,7 +226,7 @@ class Matrix4f(
 
     fun toRowEchelonForm() : Pair<Matrix4f, Int> {
         var result = Matrix4f(this.values)
-        val pivot1 = sequenceOf(0, 1, 2, 3).filter { result[it, 0] != 0f }.min()
+        val pivot1 = sequenceOf(0, 1, 2, 3).filter { result[it, 0] != 0f }.minOrNull()
         var swaps = 0
 
         pivot1?.let {
@@ -241,7 +241,7 @@ class Matrix4f(
             }
         }
 
-        val pivot2 = sequenceOf(1, 2, 3).filter { result[it, 1] != 0f }.min()
+        val pivot2 = sequenceOf(1, 2, 3).filter { result[it, 1] != 0f }.minOrNull()
         pivot2?.let {
             if (it != 1) {
                 result = result.swapRows(it, 1)
@@ -254,7 +254,7 @@ class Matrix4f(
             }
         }
 
-        val pivot3 = sequenceOf(2, 3).filter { result[it, 2] != 0f }.min()
+        val pivot3 = sequenceOf(2, 3).filter { result[it, 2] != 0f }.minOrNull()
         pivot3?.let {
             if (it != 2) {
                 result = result.swapRows(2, 3)

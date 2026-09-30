@@ -41,8 +41,9 @@ class EntityWorldGrid(val game: Game, width: Int, height: Int, val world: TileWo
         if (tileX + tileY * width >= width * height || this[tileX, tileY] == null)
             return false
 
-        val temp = this[tileX, tileY]
-        game.renderingEngine.unregister(temp)
+        this[tileX, tileY]?.let {
+            game.renderingEngine.unregister(it)
+        }
 
 //        this[tileX, tileY] = null
         super.removeEntity(tileX, tileY)
@@ -51,12 +52,13 @@ class EntityWorldGrid(val game: Game, width: Int, height: Int, val world: TileWo
     }
 
     override fun moveEntity(startX: Int, startY: Int, endX: Int, endY: Int): Boolean {
-        if (startX < 0 || startX >= width || startY < 0 || startY >= height
-            || endX < 0 || endX >= width || endY < 0 || endY >= height)
+        if (startX !in 0..<width || startY !in 0..<height
+            || endX !in 0..<width || endY !in 0..<height)
             return false
 
-        if (this[endX, endY] != null)
-            game.renderingEngine.unregister(this[endX, endY])
+        this[endX, endY]?.let {
+            game.renderingEngine.unregister(it)
+        }
 
         val movedEntity = this[startX, startY]
         if (movedEntity == null) {

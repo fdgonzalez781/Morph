@@ -5,18 +5,14 @@ import com.morph.engine.graphics.LoadedFont.Companion.CHARSET
 import com.morph.engine.math.MathUtils.clamp
 import com.morph.engine.graphics.shaders.Shader
 import com.morph.engine.graphics.LoadedFont
-import com.morph.engine.graphics.components.RenderData
 import com.morph.engine.math.Vector2f
-import com.morph.engine.graphics.LoadedCharacter
-import java.util.stream.IntStream
-import java.util.function.IntUnaryOperator
 import java.nio.CharBuffer
 
 // TODO: Migrate to Kotlin
 /**
  * Created on 7/30/2017.
  */
-class TextRenderData(shader: Shader<*>?, text: String, font: LoadedFont, color: Color?) :
+class TextRenderData(shader: Shader<*>, text: String, font: LoadedFont, color: Color) :
     RenderData(shader, font.textureAtlas) {
     private val font: LoadedFont
     private var text = ""
@@ -32,7 +28,7 @@ class TextRenderData(shader: Shader<*>?, text: String, font: LoadedFont, color: 
     init {
         cursorPosition = Vector2f(0f, 0f)
         this.font = font
-        setTint(color)
+        tint = color
         if (text != "") addString(text)
     }
 
@@ -65,7 +61,7 @@ class TextRenderData(shader: Shader<*>?, text: String, font: LoadedFont, color: 
     }
 
     fun addCharacter(c: Char) {
-        updateAll { data: RenderData? -> loadCharacter(c) }
+        updateAll { loadCharacter(c) }
     }
 
     fun newLine() {
@@ -80,7 +76,7 @@ class TextRenderData(shader: Shader<*>?, text: String, font: LoadedFont, color: 
     }
 
     fun addString(text: String) {
-        updateAll { data: RenderData? -> loadString(text) }
+        updateAll { loadString(text) }
     }
 
     fun setText(text: String) {
@@ -97,8 +93,8 @@ class TextRenderData(shader: Shader<*>?, text: String, font: LoadedFont, color: 
             System.err.println("Attempt to remove character beyond string length")
             return
         }
-        updateIndices { data: RenderData? -> for (i in 0..5) removeIndexAtPosition(index * 6) }
-        updateVertices { data: RenderData? -> for (i in 0..3) removeVertexAtPosition(index * 4) }
+        updateIndices { for (i in 0..5) removeIndexAtPosition(index * 6) }
+        updateVertices { for (i in 0..3) removeVertexAtPosition(index * 4) }
         val charData = font.getCharacter(text[index])
         charCursorPosition--
         previousPointLength -= 4
@@ -107,7 +103,7 @@ class TextRenderData(shader: Shader<*>?, text: String, font: LoadedFont, color: 
     }
 
     fun removeCharacter(c: Char) {
-        updateIndices { data: RenderData? ->
+        updateIndices {
             if (text.indexOf(c) == -1) System.err.println("Character not present in text") else removeCharacter(
                 text.indexOf(c)
             )
@@ -115,7 +111,7 @@ class TextRenderData(shader: Shader<*>?, text: String, font: LoadedFont, color: 
     }
 
     fun removeCharacter() {
-        updateIndices { data: RenderData? ->
+        updateIndices {
             if (text.length == 0) System.err.println("Text is empty") else removeCharacter(
                 text.length - 1
             )
@@ -123,9 +119,9 @@ class TextRenderData(shader: Shader<*>?, text: String, font: LoadedFont, color: 
     }
 
     fun clearText() {
-        updateAll { data: RenderData ->
-            data.getVertices().clear()
-            data.getIndices().clear()
+        updateAll {
+            vertices.clear()
+            indices.clear()
         }
         text = ""
         cursorPosition = Vector2f(0f, 0f)

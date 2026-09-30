@@ -1,5 +1,7 @@
 package com.morph.engine.graphics
 
+import kotlin.math.floor
+
 data class Color @JvmOverloads constructor(var red: Float, var green: Float, var blue: Float, var alpha: Float = 1f) {
     operator fun times(k: Float): Color {
         return Color(red * k, green * k, blue * k)
@@ -10,9 +12,9 @@ data class Color @JvmOverloads constructor(var red: Float, var green: Float, var
     }
 
     fun clamp(): Color {
-        val red = Math.max(0f, Math.min(1f, this.red))
-        val green = Math.max(0f, Math.min(1f, this.green))
-        val blue = Math.max(0f, Math.min(1f, this.blue))
+        val red = this.red.coerceIn(0f, 1f)
+        val green = this.green.coerceIn(0f, 1f)
+        val blue = this.blue.coerceIn(0f, 1f)
 
         return Color(red, green, blue)
     }
@@ -34,6 +36,8 @@ data class Color @JvmOverloads constructor(var red: Float, var green: Float, var
     fun toFloatArray(): FloatArray = floatArrayOf(red, green, blue, alpha)
 
     fun toDoubleArray(): DoubleArray = doubleArrayOf(red.toDouble(), green.toDouble(), blue.toDouble(), alpha.toDouble())
+
+    fun toList(): List<Float> = listOf(red, green, blue, alpha)
 }
 
 object Colors {
@@ -53,18 +57,18 @@ object Colors {
     }
 
     @JvmStatic fun Color.toARGBHex(): Int {
-        val alpha = Math.floor((alpha * 0xff).toDouble()).toInt()
-        val red = Math.floor((red * 0xff).toDouble()).toInt()
-        val green = Math.floor((green * 0xff).toDouble()).toInt()
-        val blue = Math.floor((blue * 0xff).toDouble()).toInt()
+        val alpha = floor((alpha * 0xff).toDouble()).toInt()
+        val red = floor((red * 0xff).toDouble()).toInt()
+        val green = floor((green * 0xff).toDouble()).toInt()
+        val blue = floor((blue * 0xff).toDouble()).toInt()
 
         return alpha shl 24 or (red shl 16) or (green shl 8) or blue
     }
 
     @JvmStatic fun Color.toRGBHex(): Int {
-        val red = Math.floor((red * 0xff).toDouble()).toInt()
-        val green = Math.floor((green * 0xff).toDouble()).toInt()
-        val blue = Math.floor((blue * 0xff).toDouble()).toInt()
+        val red = floor((red * 0xff).toDouble()).toInt()
+        val green = floor((green * 0xff).toDouble()).toInt()
+        val blue = floor((blue * 0xff).toDouble()).toInt()
 
         return red shl 16 or (green shl 8) or blue
     }
